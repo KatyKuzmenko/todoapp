@@ -4,15 +4,27 @@ const root = document.querySelector('.todoapp');
 const todoList = root.querySelector('.todo-list');
 const newTodoField = root.querySelector('.new-todo');
 const allToggler = root.querySelector('.toggle-all');
+const clearButton = root.querySelector('.clear-completed');
 
 function countNotCompletedTodos() {
   const notCompletedTodos = root.querySelectorAll('.toggle:not(:checked)');
   const counter = root.querySelector('.todo-count');
+  const completedTodos = root.querySelectorAll('.toggle:checked');
 
   counter.innerHTML = `${notCompletedTodos.length} items left`;
-
   allToggler.checked = notCompletedTodos.length === 0;
+  clearButton.hidden = completedTodos.length === 0;
 }
+
+clearButton.addEventListener('click', () => {
+  const completedTodos = root.querySelectorAll('.toggle:checked');
+
+  for (const toggler of completedTodos) {
+    toggler.closest('.todo-list__item').remove();
+  }
+
+  countNotCompletedTodos();
+});
 
 allToggler.addEventListener('change',  () => {
   const togglers = root.querySelectorAll('.toggle');
@@ -32,11 +44,9 @@ newTodoField.addEventListener('keydown', (event) => {
 
   todoList.insertAdjacentHTML('beforeend', `
     <li class="todo-list__item">
-      <label for="#todo-${id}">
-        ${newTodoField.value}
-      </label>
-      <input id="todo-${id}" class="toggle" type="checkbox"></input>
-      <button class="remove"></button>
+      <input id="todo-${id}" class="toggle" type="checkbox">
+      <label for="#todo-${id}">${newTodoField.value}</label>
+      <button class="destroy"></button>
     </li>
   `);
 
@@ -45,7 +55,7 @@ newTodoField.addEventListener('keydown', (event) => {
 });
 
 todoList.addEventListener('click', (event) => {
-  if (!event.target.matches('.remove')) {
+  if (!event.target.matches('.destroy')) {
     return;
   }
 
