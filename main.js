@@ -1,6 +1,9 @@
 'use strict';
 
 const root = document.querySelector('.todoapp');
+
+render();
+
 const newTodoField = root.querySelector('.new-todo');
 const todoList = root.querySelector('.todo-list');
 const todos = root.querySelectorAll('.todo-list__item');
@@ -10,6 +13,45 @@ const filter = root.querySelector('.filters');
 const footer = root.querySelector('.footer');
 
 footer.hidden = true;
+
+
+function render() {
+  root.innerHTML = `
+    <header class="header">
+      <h1>todos</h1>
+
+      <input class="new-todo" placeholder="What needs to be done?">
+    </header>
+
+    <section class="main">
+      <input id="toggle-all" class="toggle-all" type="checkbox">
+
+      <label for="toggle-all"></label>
+
+      <ul class="todo-list"></ul>
+    </section>
+
+    <footer class="footer">
+      <span class="todo-count"></span>
+
+      <ul class="filters">
+        <li>
+          <a href="#/" class="selected" data-filter="all">All</a>
+        </li>
+
+        <li>
+          <a href="#/active" data-filter="active">Active</a>
+        </li>
+
+        <li>
+          <a href="#/completed" data-filter="completed">Completed</a>
+        </li>
+      </ul>
+
+      <button class="clear-completed">Clear completed</button>
+    </footer>
+  `
+}
 
 function countNotCompletedTodos() {
   const notCompletedTodos = root.querySelectorAll('.toggle:not(:checked)');
