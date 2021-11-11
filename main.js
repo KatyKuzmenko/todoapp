@@ -21,7 +21,8 @@ function countNotCompletedTodos() {
   allToggler.checked = notCompletedTodos.length === 0;
   clearButton.hidden = completedTodos.length === 0;
   footer.hidden = todos.length === 0;
-};
+  allToggler.hidden = todos.length === 0;
+}
 
 newTodoField.addEventListener('keydown', (event) => {
   const id = +new Date();
