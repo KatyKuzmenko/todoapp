@@ -6,12 +6,6 @@ let filterType = 'all';
 const root = document.querySelector('.todoapp');
 render();
 
-// const newTodoField = root.querySelector('.new-todo');
-// const todoList = root.querySelector('.todo-list');
-// const allToggler = root.querySelector('.toggle-all');
-// const clearButton = root.querySelector('.clear-completed');
-// const filter = root.querySelector('.filters');
-
 function render() {
   const activeTodos = currentTodos.filter(todo => !todo.completed);
   const completedTodos = currentTodos.filter(todo => todo.completed);
@@ -29,7 +23,6 @@ function render() {
       <input
         class="new-todo"
         placeholder="What needs to be done?"
-        autofocus
         onkeydown="addTodo(event)"
       >
     </header>
@@ -50,7 +43,7 @@ function render() {
         <ul class="todo-list">
           ${visibleTodos.map(todo => `
             <li
-              class="todo-list__item ${todo.completed ? 'completed' : ''}"
+              class="todo-list__item editing ${todo.completed ? 'completed' : ''}"
               data-todo-id="${todo.id}"
             >
               <input
@@ -61,12 +54,14 @@ function render() {
                 onchange="toggleTodo(${todo.id}, event.target.checked)"
               >
 
-              <label>${todo.title}</label>
+              <label ondblclick="editTodo(${todo.id})">${todo.title}</label>
 
               <button
                 class="destroy"
                 onclick="removeTodo(${todo.id})"
               ></button>
+
+              <input class="input-for-editting" hidden onkeydown="setNewTitle()" type="text" value="${todo.title}">
             </li>
           `).join('')}
         </ul>
@@ -125,11 +120,19 @@ function render() {
       ${footer}
     ` : ''}
   `;
+  const input = root.querySelector('.new-todo');
+  input.focus();
 }
 function setFilterType(type) {
   filterType = type;
   render();
 }
+
+function editTodo(event) {
+ //  *********
+  input.hidden = false;
+}
+
 // Add todo
 function addTodo(event) {
   if (event.key !== 'Enter' || !event.target.value) {
@@ -144,8 +147,6 @@ function addTodo(event) {
   });
 
   render();
-  const input = root.querySelector('.new-todo');
-  input.focus();
 }
 
 // Remove todo
