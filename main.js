@@ -6,11 +6,11 @@ let filterType = 'all';
 const root = document.querySelector('.todoapp');
 render();
 
-const newTodoField = root.querySelector('.new-todo');
-const todoList = root.querySelector('.todo-list');
-const allToggler = root.querySelector('.toggle-all');
-const clearButton = root.querySelector('.clear-completed');
-const filter = root.querySelector('.filters');
+// const newTodoField = root.querySelector('.new-todo');
+// const todoList = root.querySelector('.todo-list');
+// const allToggler = root.querySelector('.toggle-all');
+// const clearButton = root.querySelector('.clear-completed');
+// const filter = root.querySelector('.filters');
 
 function render() {
   const activeTodos = currentTodos.filter(todo => !todo.completed);
@@ -144,6 +144,8 @@ function addTodo(event) {
   });
 
   render();
+  const input = root.querySelector('.new-todo');
+  input.focus();
 }
 
 // Remove todo
