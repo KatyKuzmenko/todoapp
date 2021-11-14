@@ -44,27 +44,30 @@ function render() {
         <ul class="todo-list">
           ${visibleTodos.map(todo => `
             <li
-              class="todo-list__item editing ${todo.completed ? 'completed' : ''}"
+              class="todo-list__item ${todo.completed ? 'completed' : ''}"
               data-todo-id="${todo.id}"
             >
-              <input
-                id="todo-${todo.id}"
-                class="toggle"
-                type="checkbox"
-                ${todo.completed ? 'checked' : ''}
-                onchange="toggleTodo(${todo.id}, event.target.checked)"
-              >
+              <div>
+                <input
+                  id="todo-${todo.id}"
+                  class="toggle"
+                  type="checkbox"
+                  ${todo.completed ? 'checked' : ''}
+                  onchange="toggleTodo(${todo.id}, event.target.checked)"
+                >
 
-              <label ondblclick="editTodo(${todo.id})">${todo.title}</label>
+                <label
+                  ondblclick="editTodo(event, ${todo.id})">${todo.title}</label>
 
-              <button
-                class="destroy"
-                onclick="removeTodo(${todo.id})"
-              ></button>
+                <button
+                  class="destroy"
+                  onclick="removeTodo(${todo.id})"
+                ></button>
+              </div>
 
-              <input class="edit" type="text" value="${todo.title}" onkeydown="setNewTitle(event, ${todo.id}, event.target.value)">
-
+              <input class="edit${todo.id}" type="text" value="${todo.title}" onkeydown="setNewTitle(event, ${todo.id}, event.target.value)">
             </li>
+            
           `).join('')}
         </ul>
       </span>
@@ -130,19 +133,17 @@ function setFilterType(type) {
   render();
 }
 
-function editTodo(id) {
-  const listItem = root.getElementById(id);
-
-		listItem.classList.add('editing');
-
-		const input = document.createElement('input');
-		input.className = 'edit';
-
-		input.value = target.innerText;
-		listItem.appendChild(input);
-		input.focus();
+//Edit todo
+function editTodo(event, id) {
+  const selectedTodo = event.target.parentElement;
+  selectedTodo.classList.add('editing');
+  selectedTodo.hidden = true;
+  const editField = root.querySelector(`.edit${id}`);
+  editField.classList.add('edit');
+  editField.hidden = false;
 }
 
+//Save new title
 function setNewTitle(event, id, title) {
   if (event.key !== 'Enter' || !event.target.value) {
     return;
