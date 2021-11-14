@@ -13,6 +13,7 @@ function render() {
     all: currentTodos,
     active: activeTodos,
     completed: completedTodos,
+
   };
 
   const visibleTodos = todos[filterType];
@@ -61,7 +62,8 @@ function render() {
                 onclick="removeTodo(${todo.id})"
               ></button>
 
-              <input class="input-for-editting" hidden onkeydown="setNewTitle()" type="text" value="${todo.title}">
+              <input class="edit" type="text" value="${todo.title}" onkeydown="setNewTitle(event, ${todo.id}, event.target.value)">
+
             </li>
           `).join('')}
         </ul>
@@ -128,9 +130,26 @@ function setFilterType(type) {
   render();
 }
 
-function editTodo(event) {
- //  *********
-  input.hidden = false;
+function editTodo(id) {
+  const listItem = root.getElementById(id);
+
+		listItem.classList.add('editing');
+
+		const input = document.createElement('input');
+		input.className = 'edit';
+
+		input.value = target.innerText;
+		listItem.appendChild(input);
+		input.focus();
+}
+
+function setNewTitle(event, id, title) {
+  if (event.key !== 'Enter' || !event.target.value) {
+    return;
+  }
+  const selectedTodo = currentTodos.find(todo => todo.id === id);
+  selectedTodo.title = title;
+  render();
 }
 
 // Add todo
@@ -144,6 +163,7 @@ function addTodo(event) {
     id: id,
     title: event.target.value,
     completed: false,
+    newTitle: '',
   });
 
   render();
