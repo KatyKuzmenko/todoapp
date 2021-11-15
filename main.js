@@ -1,5 +1,7 @@
 'use strict';
 
+//----------------Functions--------------//
+
 let currentTodos = [];
 let filterType = 'all';
 

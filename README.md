@@ -7,4 +7,6 @@
 5. Remove all completed todos  DONE
 6. Filters FIX DONE
 7. Footer should be hidden if no todos added DONE
-8. Editing ----
+8. Editing DONE
+
+## 
