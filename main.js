@@ -47,7 +47,7 @@ function render() {
               class="todo-list__item ${todo.completed ? 'completed' : ''}"
               data-todo-id="${todo.id}"
             >
-              <div>
+              <div class="view">
                 <input
                   id="todo-${todo.id}"
                   class="toggle"
@@ -65,7 +65,7 @@ function render() {
                 ></button>
               </div>
 
-              <input class="edit${todo.id}" type="text" value="${todo.title}" onkeydown="setNewTitle(event, ${todo.id}, event.target.value)">
+              <input class="" type="text" value="${todo.title}" onkeydown="setNewTitle(event, ${todo.id}, event.target.value)">
             </li>
             
           `).join('')}
@@ -140,7 +140,6 @@ function editTodo(event, id) {
   selectedTodo.hidden = true;
   const editField = root.querySelector(`.edit${id}`);
   editField.classList.add('edit');
-  editField.hidden = false;
 }
 
 //Save new title
