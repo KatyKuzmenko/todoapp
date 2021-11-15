@@ -64,13 +64,12 @@ function render() {
               </div>
                
               <input
-                class="edit-field ${todo.isVisible ? 'invisible' : ''}"
-                data-edit-id="${todo.id}"
+                class="edit-field edit${todo.id} ${todo.isVisible ? 'invisible' : ''}"
+                id="${todo.id}"
                 type="text"
                 value="${todo.title}"
                 onkeydown="setNewTitle(event, ${todo.id}, event.target.value)"
                 onblur="setTitleonBlur(event, ${todo.id}, event.target.value)"
-                autofocus
               >
             </li>
             
@@ -132,7 +131,9 @@ function render() {
     ` : ''}
   `;
   const input = root.querySelector('.new-todo');
-  input.focus();
+  if (currentTodos.every(todo => todo.isVisible === true)) {
+    input.focus();
+  }
 }
 function setFilterType(type) {
   filterType = type;
@@ -142,10 +143,11 @@ function setFilterType(type) {
 //Edit todo
 function editTodo(id) {
   const todo = currentTodos.find(todo => todo.id === id);
-  const input = root.querySelector(`[data-edit-id="${id}"]`);
   todo.isVisible = false;
   render();
-  input.focus();
+  const editInput = root.querySelector(`.edit${id}`);
+  editInput.focus();
+  editInput.selectionStart = editInput.value.length;
 }
 
 //Save new title
@@ -154,9 +156,10 @@ function setNewTitle(event, id, title) {
     return;
   }
   const selectedTodo = currentTodos.find(todo => todo.id === id);
-  selectedTodo.title = title;
+  selectedTodo.title = title.trim();
   selectedTodo.isVisible = true;
   render();
+
 }
 
 function setTitleonBlur(event, id, title) {
