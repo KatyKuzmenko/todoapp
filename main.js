@@ -13,7 +13,6 @@ function render() {
     all: currentTodos,
     active: activeTodos,
     completed: completedTodos,
-
   };
 
   const visibleTodos = todos[filterType];
@@ -47,7 +46,7 @@ function render() {
               class="todo-list__item ${todo.completed ? 'completed' : ''}"
               data-todo-id="${todo.id}"
             >
-              <div class="view">
+              <div class="view ${!todo.isVisible ? 'invisible' : ''}">
                 <input
                   id="todo-${todo.id}"
                   class="toggle"
@@ -56,16 +55,23 @@ function render() {
                   onchange="toggleTodo(${todo.id}, event.target.checked)"
                 >
 
-                <label
-                  ondblclick="editTodo(event, ${todo.id})">${todo.title}</label>
-
+                <label ondblclick="editTodo(${todo.id})">${todo.title}</label>
+                  
                 <button
                   class="destroy"
                   onclick="removeTodo(${todo.id})"
                 ></button>
               </div>
-
-              <input class="" type="text" value="${todo.title}" onkeydown="setNewTitle(event, ${todo.id}, event.target.value)">
+               
+              <input
+                class="edit-field ${todo.isVisible ? 'invisible' : ''}"
+                data-edit-id="${todo.id}"
+                type="text"
+                value="${todo.title}"
+                onkeydown="setNewTitle(event, ${todo.id}, event.target.value)"
+                onblur="setTitleonBlur(event, ${todo.id}, event.target.value)"
+                autofocus
+              >
             </li>
             
           `).join('')}
@@ -134,12 +140,12 @@ function setFilterType(type) {
 }
 
 //Edit todo
-function editTodo(event, id) {
-  const selectedTodo = event.target.parentElement;
-  selectedTodo.classList.add('editing');
-  selectedTodo.hidden = true;
-  const editField = root.querySelector(`.edit${id}`);
-  editField.classList.add('edit');
+function editTodo(id) {
+  const todo = currentTodos.find(todo => todo.id === id);
+  const input = root.querySelector(`[data-edit-id="${id}"]`);
+  todo.isVisible = false;
+  render();
+  input.focus();
 }
 
 //Save new title
@@ -149,6 +155,18 @@ function setNewTitle(event, id, title) {
   }
   const selectedTodo = currentTodos.find(todo => todo.id === id);
   selectedTodo.title = title;
+  selectedTodo.isVisible = true;
+  render();
+}
+
+function setTitleonBlur(event, id, title) {
+  if (!event.target.value) {
+    return;
+  }
+
+  const selectedTodo = currentTodos.find(todo => todo.id === id);
+  selectedTodo.title = title;
+  selectedTodo.isVisible = true;
   render();
 }
 
@@ -163,7 +181,7 @@ function addTodo(event) {
     id: id,
     title: event.target.value,
     completed: false,
-    newTitle: '',
+    isVisible: true,
   });
 
   render();
