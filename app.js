@@ -4,6 +4,7 @@
 
 let currentTodos = [];
 const root = document.querySelector('.todoapp');
+let filterType = 'all';
 
 class Todo {
   constructor(title) {
@@ -22,7 +23,6 @@ class TodoList {
   }
 
   render() {
-    let filterType = 'all';
     const activeTodos = currentTodos.filter(todo => !todo.completed);
     const completedTodos = currentTodos.filter(todo => todo.completed);
     const todos = {
@@ -35,10 +35,10 @@ class TodoList {
     const header = `
       <header class="header">
         <h1>todos</h1>
-
         <input
           class="new-todo"
           placeholder="What needs to be done?"
+          onkeydown="todoList.addTodo(event)"
         >
       </header>
     `;
@@ -51,10 +51,9 @@ class TodoList {
             class="toggle-all"
             type="checkbox"
             ${activeTodos.length === 0 ? 'checked' : ''}
+            onchange="todoList.toggleAll(event.target.checked)"
           >
-
           <label for="toggle-all"></label>
-
           <ul class="todo-list">
             ${visibleTodos.map(todo => `
               <li
@@ -67,12 +66,13 @@ class TodoList {
                     class="toggle"
                     type="checkbox"
                     ${todo.completed ? 'checked' : ''}
+                    onchange="todoList.toggleTodo(${todo.id}, event.target.checked)"
                   >
-
-                  <label>${todo.title}</label>
+                  <label ondblclick="todoList.editTodo(${todo.id})">${todo.title}</label>
                     
                   <button
                     class="destroy"
+                    onclick="todoList.removeTodo(${todo.id})"
                   ></button>
                 </div>
                 
@@ -81,6 +81,8 @@ class TodoList {
                   id="${todo.id}"
                   type="text"
                   value="${todo.title}"
+                  onkeydown="todoList.setNewTitle(event, ${todo.id}, event.target.value)"
+                  onblur="todoList.setTitleonBlur(event, ${todo.id}, event.target.value)"
                 >
               </li>
               
@@ -94,35 +96,35 @@ class TodoList {
         <span class="todo-count">
           ${activeTodos.length} items left
         </span>
-
         <ul class="filters">
           <li>
             <a
               href="#/"
               ${filterType === 'all' ? 'class="selected"' : ''}
+              onclick="todoList.setFilterType('all')"
             >All</a>
           </li>
-
           <li>
             <a
               href="#/active"
               data-filter="active"
               ${filterType === 'active' ? 'class="selected"' : ''}
+              onclick="todoList.setFilterType('active')"
             >Active</a>
           </li>
-
           <li>
             <a
               href="#/completed"
               data-filter="completed"
               ${filterType === 'completed' ? 'class="selected"' : ''}
+              onclick="todoList.setFilterType('completed')"
             >Completed</a>
           </li>
         </ul>
-
         ${completedTodos.length > 0 ? `
           <button
             class="clear-completed"
+            onclick="todoList.clearCompleted()"
           >
             Clear completed
           </button>
@@ -131,7 +133,6 @@ class TodoList {
     `;
     this.root.innerHTML = `
       ${header}
-
       ${currentTodos.length > 0 ? `
         ${main}
         ${footer}
@@ -141,27 +142,11 @@ class TodoList {
     if (currentTodos.every(todo => todo.isVisible === true)) {
       input.focus();
     }
-    this.addListeners();
   }
 
-  addListeners() {
-    const headerInput = document.querySelector('.new-todo');
-    headerInput.addEventListener('keydown', (event) => {
-      this.addTodo(event);
-    });
-
-    const toggle = document.querySelector('.toggle-all');
-    toggle.addEventListener('change', (event) => {
-      this.toggleAll(event.target.checked);
-    });
-
-    const togglers = document.querySelector('.toggle');
-    togglers.forEach(toggler => {
-      toggler.addEventListener('change', (todo, event) => {
-        this.toggleTodo(todo.id, event.target.checked);
-      })
-    })
-
+  setFilterType(type) {
+    filterType = type;
+    this.render(this.todos);
   }
 
   addTodo(event) {
@@ -192,7 +177,44 @@ class TodoList {
     selectedTodo.completed = completed;
     this.render(this.todos);
   }
+
+  editTodo(id) {
+    const todo = currentTodos.find(todo => todo.id === id);
+    todo.isVisible = false;
+    this.render(this.todos);
+    const editInput = root.querySelector(`.edit${id}`);
+    editInput.focus();
+    editInput.selectionStart = editInput.value.length;
+  }
+
+  setNewTitle(event, id, title) {
+    if (event.key !== 'Enter' || !event.target.value.trim()) {
+      return;
+    }
+    const selectedTodo = currentTodos.find(todo => todo.id === id);
+    selectedTodo.title = title.trim();
+    selectedTodo.isVisible = true;
+    this.render(this.todos);
+  }
+
+  setTitleonBlur(event, id, title) {
+    if (!event.target.value.trim()) {
+      return;
+    }
+  
+    const selectedTodo = currentTodos.find(todo => todo.id === id);
+    selectedTodo.title = title;
+    selectedTodo.isVisible = true;
+    this.render(this.todos);
+  }
+
+  clearCompleted() {
+    currentTodos = currentTodos.filter(todo => !todo.completed);
+    this.render(this.todos);
+  }
+  
+
+
 }
 
 const todoList = new TodoList();
-console.log(currentTodos);
