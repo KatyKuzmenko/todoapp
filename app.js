@@ -17,7 +17,6 @@ class Todo {
 
 class TodoList {
   constructor() {
-    this.root = document.querySelector('.todoapp');
     this.todos = currentTodos;
     this.render(this.todos);
   }
