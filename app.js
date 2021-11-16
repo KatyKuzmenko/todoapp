@@ -77,7 +77,10 @@ class TodoList {
 
                 <div class="modal${todo.id} modal">
                   <div class="modal__content">
-                    <button class="modal__close-button">
+                    <button
+                      class="modal__close-button"
+                      onclick="todoList.closeModalWindow(${todo.id})"
+                    >
                     </button>
 
                     <p class="modal__title">
@@ -87,9 +90,12 @@ class TodoList {
                     <div class="button-container">
                       <button
                         class="modal__button"
-                        onclick="todoList.closeModalWindow(${todo.id})"
+                        onclick="todoList.deleteTodoAndCloseModalWindow(${todo.id})"
                       >Delete</button>
-                      <button class="modal__button">Cancel</button>
+                      <button
+                        class="modal__button"
+                        onclick="todoList.closeModalWindow(${todo.id})"
+                      >Cancel</button>
                     </div>
                   </div>
                 </div>
@@ -240,10 +246,15 @@ class TodoList {
     modal.classList.add('modal--active');
   }
 
-  closeModalWindow(id) {
+  deleteTodoAndCloseModalWindow(id) {
     const modal = root.querySelector('.modal');
     modal.classList.remove('modal--active');
     this.removeTodo(id);
+  }
+
+  closeModalWindow(id) {
+    const modal = root.querySelector('.modal');
+    modal.classList.remove('modal--active');
   }
 }
 
