@@ -61,7 +61,7 @@ function render() {
                   
                 <button
                   class="destroy"
-                  onclick="removeTodo(${todo.id})"
+                  onclick="topenModalWindow()"
                 ></button>
               </div>
                

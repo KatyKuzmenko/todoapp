@@ -11,7 +11,6 @@ class Todo {
     this.id = +new Date();
     this.title = title;
     this.completed = false;
-    this.isVisible = true;
   }
 }
 
@@ -60,7 +59,7 @@ class TodoList {
                 class="todo-list__item ${todo.completed ? 'completed' : ''}"
                 data-todo-id="${todo.id}"
               >
-                <div class="view ${!todo.isVisible ? 'invisible' : ''}">
+                <div class="view${todo.id}">
                   <input
                     id="todo-${todo.id}"
                     class="toggle"
@@ -72,17 +71,37 @@ class TodoList {
                     
                   <button
                     class="destroy"
-                    onclick="todoList.removeTodo(${todo.id})"
+                    onclick="todoList.openModalWindow(${todo.id})"
                   ></button>
                 </div>
+
+                <div class="modal${todo.id} modal">
+                  <div class="modal__content">
+                    <button class="modal__close-button">
+                    </button>
+
+                    <p class="modal__title">
+                      Are you sure You want to delete this task?
+                    </p>
+
+                    <div class="button-container">
+                      <button
+                        class="modal__button"
+                        onclick="todoList.closeModalWindow(${todo.id})"
+                      >Delete</button>
+                      <button class="modal__button">Cancel</button>
+                    </div>
+                  </div>
+                </div>
+
                 
                 <input
-                  class="edit-field edit${todo.id} ${todo.isVisible ? 'invisible' : ''}"
+                  class="edit-field edit${todo.id} invisible"
                   id="${todo.id}"
                   type="text"
                   value="${todo.title}"
-                  onkeydown="todoList.setNewTitle(event, ${todo.id}, event.target.value)"
-                  onblur="todoList.setTitleonBlur(event, ${todo.id}, event.target.value)"
+                  onkeydown="todoList.setTitleOnKeydown(event, ${todo.id}, event.target.value)"
+                  onblur="todoList.setTitleOnBlur(event, ${todo.id}, event.target.value)"
                 >
               </li>
               
@@ -91,6 +110,7 @@ class TodoList {
         </span>
       </section>
     `;
+
     const footer = `
       <footer class="footer">
         <span class="todo-count">
@@ -131,17 +151,17 @@ class TodoList {
         ` : ''} 
       </footer>
     `;
+
     this.root.innerHTML = `
-      ${header}
-      ${currentTodos.length > 0 ? `
-        ${main}
-        ${footer}
-      ` : ''}
+        ${header}
+        ${currentTodos.length > 0 ? `
+          ${main}
+          ${footer}
+        ` : ''}
     `;
+
     const input = this.root.querySelector('.new-todo');
-    if (currentTodos.every(todo => todo.isVisible === true)) {
-      input.focus();
-    }
+    input.focus();
   }
 
   setFilterType(type) {
@@ -153,9 +173,9 @@ class TodoList {
     if (!event.target.value || event.key !== 'Enter') {
       return;
     }
-  
+
     currentTodos.push(new Todo(event.target.value))
-  
+
     this.render(this.todos);
   }
 
@@ -179,42 +199,52 @@ class TodoList {
   }
 
   editTodo(id) {
-    const todo = currentTodos.find(todo => todo.id === id);
-    todo.isVisible = false;
-    this.render(this.todos);
-    const editInput = root.querySelector(`.edit${id}`);
+    const editInput = this.root.querySelector(`.edit${id}`);
+    const todoItem = this.root.querySelector(`.view${id}`);
+    editInput.className = `edit-field edit${id}`;
+    todoItem.classList.add('invisible');
     editInput.focus();
     editInput.selectionStart = editInput.value.length;
   }
 
-  setNewTitle(event, id, title) {
-    if (event.key !== 'Enter' || !event.target.value.trim()) {
-      return;
-    }
+  setTitle(id, title) {
     const selectedTodo = currentTodos.find(todo => todo.id === id);
-    selectedTodo.title = title.trim();
-    selectedTodo.isVisible = true;
+    selectedTodo.title = title;
+    const editInput = this.root.querySelector(`.edit${id}`);
+    editInput.classList.add('invisible');
     this.render(this.todos);
   }
 
-  setTitleonBlur(event, id, title) {
+  setTitleOnKeydown(event, id, title) {
+    if (event.key !== 'Enter' || !event.target.value.trim()) {
+      return;
+    }
+    this.setTitle(id, title);
+  }
+
+  setTitleOnBlur(event, id, title) {
     if (!event.target.value.trim()) {
       return;
     }
-  
-    const selectedTodo = currentTodos.find(todo => todo.id === id);
-    selectedTodo.title = title;
-    selectedTodo.isVisible = true;
-    this.render(this.todos);
+
+    this.setTitle(id, title);
   }
 
   clearCompleted() {
     currentTodos = currentTodos.filter(todo => !todo.completed);
     this.render(this.todos);
   }
-  
 
+  openModalWindow(id) {
+    const modal = this.root.querySelector(`.modal${id}`);
+    modal.classList.add('modal--active');
+  }
 
+  closeModalWindow(id) {
+    const modal = root.querySelector('.modal');
+    modal.classList.remove('modal--active');
+    this.removeTodo(id);
+  }
 }
 
 const todoList = new TodoList();

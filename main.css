@@ -30,7 +30,7 @@ button {
 }
 
 .hidden {
-	display: none;
+	overflow: hidden;
 }
 
 .todoapp {
@@ -283,4 +283,79 @@ html .clear-completed:active {
 
 .info a:hover {
 	text-decoration: underline;
+}
+
+.modal {
+  position: absolute;
+  visibility: hidden;
+  opacity: 0;
+  transition: 0.3s;
+  top: -1000px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  overflow-y: scroll;
+  padding: 60px 15px;
+}
+ 
+.modal__content {
+  width: 100%;
+  max-width: 350px;
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 10px;
+  position: relative;
+  box-shadow: 0 5px 15px #cc9a9a;;
+}
+ 
+.modal__close-button::after {
+	content: '×';
+  height: 30px;
+  width: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  position: absolute;
+  right: 0;
+  top: 0;
+  cursor: pointer;
+  outline: none;
+}
+ 
+.modal__title {
+	text-align: center;
+  font-size: 25px;
+	line-height: 30px;
+  margin: 0 0 15px;
+}
+
+.button-container {
+	display: flex;
+	justify-content: space-around;
+}
+
+.modal__button {
+	width: 100px;
+	height: 40px;
+  border: 1px solid gray;
+  border-radius: 5px;
+	cursor: pointer;
+}
+
+.modal__button:hover {
+	background-color: rgba(255, 100, 100, 0.2);
+}
+
+.modal--active {
+  position: fixed;
+  top: 0;
+  visibility: visible;
+  opacity: 1;
+  transition: .3s;
+	background-color: rgba(255, 100, 100, 0.2);
 }
